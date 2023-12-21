@@ -21,7 +21,12 @@ maintenance_manager = [
 	493874564590338058, #Developer Joshua
 ]
 
-maintenance = False
+maintenance = True
+
+if maintenance:
+	testing_bot = True
+else:
+	testing_bot = False
 
 last_anythin = datetime.now()
 
@@ -65,10 +70,18 @@ async def statusChange(type):
 	elif type == 2:
 		activity = discord.CustomActivity(name="Maintenance Mode")
 		await client.change_presence(status=discord.Status.do_not_disturb, activity=activity)
+	elif type == 3:
+		activity = discord.CustomActivity(name="Goofy Testing")
+		await client.change_presence(status=discord.Status.online, activity=activity)
 
 #set the bot to sleeping at night
 @tasks.loop(seconds=5) 
 async def my_periodic_task():
+	
+	if testing_bot:
+		await statusChange(3)
+		return
+
 	if maintenance:
 		await statusChange(2)
 		return
@@ -85,6 +98,7 @@ async def my_periodic_task():
 @client.event 
 async def on_ready(): 
 	print("Logged in as:  \"{0.user}\"".format(client))
+	
 	await statusChange(0)
 	my_periodic_task.start()
 	
@@ -127,6 +141,7 @@ async def on_voice_state_update(member, before, after):
 @client.event 
 async def on_message(message): 
 	global maintenance
+	global testing_bot
 
 	admin_role = "1175974553047019550"
 	is_admin = False
@@ -135,7 +150,7 @@ async def on_message(message):
 		if str(role.id) == admin_role:
 			is_admin = True
 	
-	if maintenance:
+	if maintenance and not testing_bot:
 		if message.content.lower().startswith("!comeback") and is_admin:
 			pass
 		else:
@@ -145,7 +160,7 @@ async def on_message(message):
 	if message.author == client.user: 
 		global last_anythin
 		last_anythin = datetime.now()
-		statusChange(0)
+		await statusChange(0)
 		return
 	
 
@@ -172,7 +187,7 @@ async def on_message(message):
 				await create_Channel(message)
 
 		#Ping to start SMP
-		if message.content.lower() == ("!smp-start" or "!start-smp") and channel_ID == 1180897376291008624:
+		if (message.content.lower() == "!smp-start" or message.content.lower() == "!start-smp") and channel_ID == 1180897376291008624:
 			await message.channel.send("""Are any <@&1180902537444982844> availabe to start the server? \n
 							  Starters, here is the ling: (https://aternos.org/server/)""")
 
@@ -181,12 +196,17 @@ async def on_message(message):
 		#Say Command
 		if message.content.lower().startswith("!say "):
 			await message.channel.send(message.content[5:])
-		elif message.content.lower().startswith("!gounder"):
+		elif message.content.lower().startswith("!gounder") and not testing_bot:
 			await message.channel.send("This bot is going into maintenance mode!")
 			maintenance = True
-		elif message.content.lower().startswith("!comeback"):
-			await message.channel.send("This bot is going into maintenance mode!")
+		elif message.content.lower().startswith("!comeback") and not testing_bot:
+			await message.channel.send("This bot is back from maintenance mode!")
 			maintenance = False
+		elif message.content.lower().startswith("!vstat"):
+			try:
+				await message.channel.send(f"{message.content[7:]}: {globals()[message.content[7:]]}")
+			except Exception as error:
+				await message.channel.send(f"Error! \"{message.content[7:]}\" is not a variable!")
 
 if not maintenance:
 	# Run the Discord client
