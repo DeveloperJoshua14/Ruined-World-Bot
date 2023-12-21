@@ -15,7 +15,6 @@ Intents.message_content = True
 client = discord.Client(intents=Intents) 
 
 custom_rooms = []
-custom_rooms_file_path = "custom_rooms.json"
 
 maintenance_manager = [
 	493874564590338058, #Developer Joshua
@@ -24,6 +23,7 @@ maintenance_manager = [
 last_anythin = datetime.now()
 
 try:
+	custom_rooms_file_path = "custom_rooms.json"
 	with open(custom_rooms_file_path, 'r') as json_file:
 		a = json.load(json_file)
 	maintenance = True
@@ -94,7 +94,6 @@ async def my_periodic_task():
 @client.event 
 async def on_ready(): 
 	print("Logged in as:  \"{0.user}\"".format(client))
-	
 	await statusChange(0)
 	my_periodic_task.start()
 	
@@ -141,6 +140,13 @@ async def on_message(message):
 	admin_role = "1175974553047019550"
 	is_admin = False
 
+	# Remove bot messages
+	if message.author == client.user: 
+		global last_anythin
+		last_anythin = datetime.now()
+		await statusChange(0)
+		return
+	
 	for role in message.author.roles:
 		if str(role.id) == admin_role:
 			is_admin = True
@@ -162,14 +168,7 @@ async def on_message(message):
 			else:
 				pass
 	
-	# Remove bot messages
-	if message.author == client.user: 
-		global last_anythin
-		last_anythin = datetime.now()
-		await statusChange(0)
-		return
-	
-	
+
 	channel_ID = message.channel.id
 
 	#Public Commands
