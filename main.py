@@ -21,20 +21,17 @@ maintenance_manager = [
 	493874564590338058, #Developer Joshua
 ]
 
-maintenance = True
-
-if maintenance:
-	testing_bot = True
-else:
-	testing_bot = False
-
 last_anythin = datetime.now()
 
 try:
 	with open(custom_rooms_file_path, 'r') as json_file:
 		a = json.load(json_file)
+	maintenance = True
+	testing_bot = True
 except:
 	custom_rooms_file_path = "home/haven/Share/Projects/Bots/Ruined World Server Bot/.Live Version/custom_rooms.json"
+	maintenance = False
+	testing_bot = False
 
 try:
 	with open(custom_rooms_file_path, 'r') as json_file:
