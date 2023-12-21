@@ -158,7 +158,7 @@ async def on_message(message):
 	#Public Commands
 	if True:
 		#Make Command
-		Allowd_Channels = [
+		Allowed_Channels = [
 			#Hypixel
 			1180616386729476117, 
 			#Ruined World SMP
@@ -166,7 +166,7 @@ async def on_message(message):
 			#Special Stuff
 			1180581157188939886
 			]
-		if channel_ID in Allowd_Channels:
+		if channel_ID in Allowed_Channels:
 			if message.content.lower().startswith("!make "):
 				await message.reply("Making Channel")
 				await create_Channel(message)
