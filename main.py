@@ -90,7 +90,6 @@ async def my_periodic_task():
 	
 	await statusChange(0)
 	
-
 #Let Console know bot is online
 @client.event 
 async def on_ready(): 
@@ -99,7 +98,6 @@ async def on_ready():
 	await statusChange(0)
 	my_periodic_task.start()
 	
-
 @client.event
 async def on_voice_state_update(member, before, after):
 
@@ -146,12 +144,23 @@ async def on_message(message):
 	for role in message.author.roles:
 		if str(role.id) == admin_role:
 			is_admin = True
+
+	if testing_bot:
+		for manager in maintenance_manager:
+			if manager == message.author.id:
+				pass
+			else:
+				return
 	
 	if maintenance and not testing_bot:
-		if message.content.lower().startswith("!comeback") and is_admin:
-			pass
-		else:
-			return
+		for manager in maintenance_manager:
+			if manager == message.author.id:
+				if message.content.lower().startswith("!comeback") and is_admin:
+					pass
+				else:
+					return
+			else:
+				pass
 	
 	# Remove bot messages
 	if message.author == client.user: 
@@ -160,10 +169,6 @@ async def on_message(message):
 		await statusChange(0)
 		return
 	
-
-
-	
-
 	
 	channel_ID = message.channel.id
 
