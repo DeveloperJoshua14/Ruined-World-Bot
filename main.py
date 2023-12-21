@@ -60,8 +60,8 @@ async def addGameMode(message,color,userdata):
 	if "-Bedwars" in message.content:
 		embed = discord.Embed(title="Bedwars", color=color)
 		embed.set_thumbnail(url="https://hypixel.net/styles/hypixel-v2/images/game-icons/BedWars-64.png")
-		embed.add_field(name="Level", value=bedwarslvl(round(userdata["player"]["stats"]["Bedwars"]["Experience"]),2), inline=False) #Level
-		embed.add_field(name="Coins", value=bedwarslvl(userdata["player"]["stats"]["Bedwars"]["coins"]), inline=False) #Coins
+		embed.add_field(name="Level", value=round(bedwarslvl(userdata["player"]["stats"]["Bedwars"]["Experience"]),2), inline=False) #Level
+		embed.add_field(name="Coins", value=userdata["player"]["stats"]["Bedwars"]["coins"], inline=False) #Coins
 		embed.add_field(name="KDR", value=round(userdata["player"]["stats"]["Bedwars"]["kills_bedwars"]/userdata["player"]["stats"]["Bedwars"]["deaths_bedwars"],2), inline=False) #KDR
 		embed.add_field(name="FKDR", value=round(userdata["player"]["stats"]["Bedwars"]["final_kills_bedwars"]/userdata["player"]["stats"]["Bedwars"]["final_deaths_bedwars"],2), inline=False) #FKDR
 		await message.channel.send(embed=embed)
