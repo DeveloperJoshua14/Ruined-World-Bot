@@ -24,14 +24,14 @@ UUID = [
 
 # UUID = []
 
-# for i in IGN:
-#     mojanginfo = requests.get(
-#         url = f"https://api.mojang.com/users/profiles/minecraft/{i}"
-#     ).json()
-#     UUID.append(mojanginfo["id"])
+for i in IGN:
+    mojanginfo = requests.get(
+        url = f"https://api.mojang.com/users/profiles/minecraft/{i}"
+    ).json()
+    UUID.append(mojanginfo["id"])
 
-# for ii in UUID:
-#     print(f"'{ii}',")
+for ii in UUID:
+    print(f"'{ii}',")
 
 for person in UUID:
     data = requests.get(

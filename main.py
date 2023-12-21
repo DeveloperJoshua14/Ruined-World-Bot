@@ -1,10 +1,14 @@
 #Imports
 import discord 
+import requests
 import os 
 import dotenv
 import json
 from discord.ext import tasks, commands
 from datetime import datetime
+import random
+import re
+
 
 # Load environment variables
 dotenv.load_dotenv()
@@ -24,12 +28,14 @@ last_anythin = datetime.now()
 
 try:
 	custom_rooms_file_path = "custom_rooms.json"
+	hypixel_userdata_file_path = ""
 	with open(custom_rooms_file_path, 'r') as json_file:
 		a = json.load(json_file)
 	maintenance = True
 	testing_bot = True
 except:
 	custom_rooms_file_path = "home/haven/Share/Projects/Bots/Ruined World Server Bot/.Live Version/custom_rooms.json"
+	hypixel_userdata_file_path = "home/haven/Share/Projects/Bots/Ruined World Server Bot/.Live Version/"
 	maintenance = False
 	testing_bot = False
 
@@ -38,6 +44,57 @@ try:
 		custom_rooms = json.load(json_file)
 except json.decoder.JSONDecodeError:
 	custom_rooms = []
+
+def getRank(userdata):
+	try:
+		try:
+			rank = userdata["player"]["prefix"]
+			pattern = re.compile(r'\u00a7[0-9a-fA-FrRlLoOnKkMm]')
+			rank = re.sub(pattern, '', rank)
+			rank = rank[1:len(a)-1]
+		except:
+			try:
+				rank = userdata["player"]["rank"]
+			except:
+				try:
+					print("5")
+					PR = userdata["player"]["newPackageRank"]
+				except:
+					PR = userdata["player"]["packageRank"]
+				if PR == "VIP_PLUS":
+					rank = "VIP+"
+				elif PR == "MVP_PLUS":
+					try:
+						if userdata["player"]["mostRecentMonthlyPackageRank"] == "SUPERSTAR":
+							rank = "MVP++"
+					except:
+						rank = "MVP+"
+				else:
+					rank = PR
+	except:
+		rank = "None"
+	return rank
+
+
+async def getHypixelData(name):
+	uuid = requests.get(
+		url = f"https://api.mojang.com/users/profiles/minecraft/{name}"
+	).json()
+
+	Hypixel_data = requests.get(
+		url = "https://api.hypixel.net/v2/player",
+		params = {
+			"key": os.getenv('HYPIXEL'),
+			"uuid": uuid["id"]
+		}
+	).json()
+	name = uuid["id"]
+
+	with open(f"{hypixel_userdata_file_path}userdata/{name}.json", 'w') as json_file:
+		# Write the data to the JSON file
+		json.dump(Hypixel_data, json_file, indent=4)
+
+	return f"{hypixel_userdata_file_path}userdata/{name}.json", uuid["id"]
 
 async def create_Channel(message):
 	guild = client.get_guild(1175973620170895491)
@@ -190,7 +247,41 @@ async def on_message(message):
 		#Ping to start SMP
 		if (message.content.lower() == "!smp-start" or message.content.lower() == "!start-smp") and channel_ID == 1180897376291008624:
 			await message.channel.send("""Are any <@&1180902537444982844> availabe to start the server? \n
-							  Starters, here is the ling: (https://aternos.org/server/)""")
+Starters, here is the ling: (https://aternos.org/server/)""")
+			
+		#Stats
+		if message.content.lower().startswith("!stats"):
+			try:
+				path, uuid = await getHypixelData(message.content[7:])
+			except:
+				await message.reply("""Uses:\n!stats Name\n!stats Name -[Specific Game]\n\nGame Names:
+-Bedwars
+-SkyWars
+-Duels
+-MurderMystery
+-TNTGames""")
+				return
+			
+			try:
+				with open(path, 'r') as json_file:
+					userdata = json.load(json_file)
+			except:
+				await message.channel.send("Failed!")
+				return
+			
+			if userdata["player"] is None:
+				await message.reply("Please ask for a real player!")
+				return
+			
+			embed = discord.Embed(title=userdata["player"]["displayname"], color=random.randint(0, 0xFFFFFF))
+			embed.set_thumbnail(url=f"https://mc-heads.net/avatar/{uuid}")
+
+
+
+			embed.add_field(name="Rank", value=getRank(userdata), inline=True)
+			await message.channel.send(embed=embed)
+
+			os.remove(path)
 
 	#Admin ONLY commands
 	if is_admin:
