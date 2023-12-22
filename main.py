@@ -13,11 +13,9 @@ Intents.message_content = True
 client = discord.Client(intents=Intents) 
 
 custom_rooms = []
-
 maintenance_manager = [
 	493874564590338058,  # Developer Joshua
 ]
-
 last_anythin = datetime.now()
 
 try:
@@ -78,7 +76,6 @@ async def addGameMode(message,color,userdata):
 		#https://hypixel.net/styles/hypixel-v2/images/game-icons/TNT-64.png
 		return
 	
-
 async def getPlayerData(message):
 	try:
 		print(message.content[8:].find(" "))
@@ -131,7 +128,6 @@ def getRank(userdata):
 	except:
 		rank = "None"
 	return rank
-
 
 def getHypixelData(name):
 	uuid = requests.get(
@@ -248,7 +244,6 @@ async def on_voice_state_update(member, before, after):
 			with open(custom_rooms_file_path, 'w') as json_file:
 				json.dump(custom_rooms, json_file, default=lambda o: o.__dict__, indent=4)
 			
-
 #Recivce message
 @client.event 
 async def on_message(message): 
@@ -343,8 +338,8 @@ Starters, here is the ling: (https://aternos.org/server/)""")
 			except Exception as error:
 				await message.channel.send(f"Error! \"{message.content[7:]}\" is not a variable!")
 
+# Run the Discord client
 if not maintenance:
-	# Run the Discord client
 	client.run(os.getenv('TOKEN'))
 else:
 	client.run(os.getenv('TESTING_TOKEN'))
