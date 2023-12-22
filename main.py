@@ -28,8 +28,8 @@ try:
 	maintenance = True
 	testing_bot = True
 except:
-	custom_rooms_file_path = "home/haven/Share/Projects/Bots/Ruined World Server Bot/.Live Version/custom_rooms.json"
-	hypixel_userdata_file_path = "home/haven/Share/Projects/Bots/Ruined World Server Bot/.Live Version/"
+	custom_rooms_file_path = "/home/haven/Share/Projects/Bots/Ruined World Server Bot/.Live Version/custom_rooms.json"
+	hypixel_userdata_file_path = "/home/haven/Share/Projects/Bots/Ruined World Server Bot/.Live Version/"
 	maintenance = False
 	testing_bot = False
 
